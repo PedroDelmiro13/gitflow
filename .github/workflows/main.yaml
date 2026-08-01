@@ -1,0 +1,56 @@
+name: minha-principal # Nome do fluxo de trabalho.
+
+on: # Define os eventos que podem fazer o fluxo de trabalho ser executado.
+
+  pull_request: # Executa quando ocorrer uma alteração em um Pull Request.
+    branches: # Define as branches que serão monitoradas.
+      - main
+      - develop
+      - refactor/**
+
+    paths: ["testes/*.sh"] # Executa apenas se arquivos .sh da pasta testes forem alterados.
+
+  push: # Executa quando houver um push.
+    branches: # Define as branches que serão monitoradas.
+      - main
+      - develop
+      - refactor/**
+
+    paths: ["testes/*.sh"] # Executa apenas se arquivos .sh da pasta testes forem alterados.
+
+  issues: # Executa quando ocorrer uma ação em uma Issue.
+    types:
+      - opened # Quando uma Issue for aberta.
+      - closed # Quando uma Issue for fechada.
+
+  workflow_dispatch: # Permite executar o workflow manualmente pelo GitHub.
+     inputs: # Define informações que podem ser preenchidas ao executar manualmente.
+      logLevel: # Define o nível de log.
+        description: 'Log level' # Descrição exibida para o usuário.
+        required: true # Torna o preenchimento obrigatório.
+        default: 'warning' # Valor padrão.
+        type: choice # Permite escolher uma opção.
+        options: # Opções disponíveis.
+          - info
+          - warning
+          - debug
+
+      print_tags: # Define se as tags serão exibidas.
+        description: 'True to print to STDOUT' # Descrição do campo.
+        required: true # Torna o preenchimento obrigatório.
+        type: boolean # Permite escolher verdadeiro ou falso.
+
+      tags: # Define as tags do cenário de teste.
+        description: 'Test scenario tags' # Descrição do campo.
+        required: true # Torna o preenchimento obrigatório.
+        type: string # Permite inserir um texto.
+
+      environment: # Define o ambiente onde os testes serão executados.
+        description: 'Environment to run tests against' # Descrição do campo.
+        type: environment # Permite selecionar um ambiente do GitHub.
+        required: true # Torna o preenchimento obrigatório.
+
+  schedule: # Permite executar o workflow automaticamente em horários definidos.
+    - cron: "0 3 * * *" # Executa todos os dias às 03:00 UTC.
+
+jobs: # Define os trabalhos que serão executados pelo workflow.
