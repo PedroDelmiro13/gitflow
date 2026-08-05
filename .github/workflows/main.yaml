@@ -1,4 +1,4 @@
-```yaml
+
 name: minha-principal # Nome do fluxo de trabalho.
 
 on: # Define os eventos que podem fazer o fluxo de trabalho ser executado.
@@ -147,4 +147,3 @@ jobs: # Define os trabalhos que serão executados pelo workflow.
 
       - name: Finalizar pipeline # Etapa final do workflow.
         run: echo "Pipeline CI/CD concluída com sucesso!" # Exibe uma mensagem de conclusão.
-```
