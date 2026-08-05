@@ -1,3 +1,4 @@
+```yaml
 name: minha-principal # Nome do fluxo de trabalho.
 
 on: # Define os eventos que podem fazer o fluxo de trabalho ser executado.
@@ -54,3 +55,96 @@ on: # Define os eventos que podem fazer o fluxo de trabalho ser executado.
     - cron: "0 3 * * *" # Executa todos os dias às 03:00 UTC.
 
 jobs: # Define os trabalhos que serão executados pelo workflow.
+
+  lint: # Responsável por verificar a qualidade e padronização do código.
+    name: Verificação do código # Nome exibido na execução do workflow.
+    runs-on: ubuntu-latest # Sistema operacional onde o job será executado.
+
+    steps: # Define as etapas executadas dentro do job.
+
+      - name: Baixar código # Nome da etapa responsável por baixar o código.
+        uses: actions/checkout@v4 # Action que copia o código do repositório para o runner.
+
+      - name: Executar análise # Executa uma verificação de qualidade do código.
+        run: echo "Executando análise do código..." # Executa um comando no terminal do runner.
+
+
+  test: # Responsável por executar os testes da aplicação.
+    name: Testes automatizados # Nome exibido na execução do workflow.
+    runs-on: ubuntu-latest # Define o sistema operacional onde o job será executado.
+    needs: lint # Faz este job depender da conclusão do job lint.
+
+    steps: # Define as etapas executadas dentro do job.
+
+      - name: Baixar código # Baixa o código do repositório.
+        uses: actions/checkout@v4 # Action utilizada para acessar o código do projeto.
+
+      - name: Executar testes # Executa os testes automatizados.
+        run: echo "Executando testes automatizados..." # Comando executado pelo runner.
+
+
+  build: # Responsável por gerar o build da aplicação.
+    name: Build da aplicação # Nome exibido na execução do workflow.
+    runs-on: ubuntu-latest # Define o sistema operacional onde o job será executado.
+    needs: test # Faz este job depender da conclusão dos testes.
+
+    steps: # Define as etapas executadas dentro do job.
+
+      - name: Baixar código # Baixa o código do repositório.
+        uses: actions/checkout@v4 # Action utilizada para acessar o código do projeto.
+
+      - name: Configurar Java # Configura o ambiente Java para a aplicação.
+        uses: actions/setup-java@v4 # Action utilizada para instalar e configurar o Java.
+        with: # Define os parâmetros utilizados pela Action.
+          distribution: temurin # Define a distribuição do Java utilizada.
+          java-version: '21' # Define a versão do Java utilizada.
+          cache: maven # Utiliza cache para as dependências do Maven.
+
+      - name: Gerar build # Executa o processo de build da aplicação.
+        run: echo "Gerando build da aplicação..." # Comando executado pelo runner.
+
+
+  security: # Responsável por verificar possíveis problemas de segurança.
+    name: Análise de segurança # Nome exibido na execução do workflow.
+    runs-on: ubuntu-latest # Define o sistema operacional onde o job será executado.
+    needs: build # Faz este job depender da conclusão do build.
+
+    steps: # Define as etapas executadas dentro do job.
+
+      - name: Baixar código # Baixa o código do repositório.
+        uses: actions/checkout@v4 # Action utilizada para acessar o código do projeto.
+
+      - name: Executar análise de segurança # Executa a verificação de segurança.
+        run: echo "Executando análise de segurança..." # Comando executado pelo runner.
+
+
+  deploy: # Responsável por realizar a entrega da aplicação.
+    name: Deploy # Nome exibido na execução do workflow.
+    runs-on: ubuntu-latest # Define o sistema operacional onde o job será executado.
+
+    needs: # Define os jobs que precisam ser concluídos antes do deploy.
+      - build # O build precisa ser concluído com sucesso.
+      - security # A análise de segurança também precisa ser concluída.
+
+    environment: # Define o ambiente utilizado pelo job.
+      name: production # Define o ambiente de produção.
+
+    steps: # Define as etapas executadas dentro do job.
+
+      - name: Baixar código # Baixa o código do repositório.
+        uses: actions/checkout@v4 # Action utilizada para acessar o código do projeto.
+
+      - name: Realizar deploy # Executa a etapa de entrega da aplicação.
+        run: echo "Realizando deploy da aplicação..." # Comando executado pelo runner.
+
+
+  notification: # Responsável por informar o resultado da pipeline.
+    name: Notificação # Nome exibido na execução do workflow.
+    runs-on: ubuntu-latest # Define o sistema operacional onde o job será executado.
+    needs: deploy # Executa somente após o deploy ser concluído.
+
+    steps: # Define as etapas executadas dentro do job.
+
+      - name: Finalizar pipeline # Etapa final do workflow.
+        run: echo "Pipeline CI/CD concluída com sucesso!" # Exibe uma mensagem de conclusão.
+```
